@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.9"
 openai = "^0.27.7"
 langchain = "^0.0.189"
+pymupdf = "^1.22.3"
+pypdf2 = "^3.0.1"
+textract = "^1.6.5"
 
 
 [build-system]
