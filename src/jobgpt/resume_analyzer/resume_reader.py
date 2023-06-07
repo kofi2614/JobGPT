@@ -5,7 +5,7 @@ import fitz
 class ResumeReader:
     def __init__(self):
         pass
-    def extract_text_from_pdf(self, pdf_path):
+    def read(self, pdf_path):
         text = ""
         with fitz.open(pdf_path) as doc:
             for page in doc:
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     resume_path = 'data/resumes/resume_1.pdf'
 
     # Extract text from the resume PDF
-    resume_text = ResumeReader().extract_text_from_pdf(resume_path)
+    resume_text = ResumeReader().read(resume_path)
 
     # Print the extracted text
     print(resume_text)

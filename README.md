@@ -1,0 +1,1 @@
+This Project aims to use AI to help candidates with their job searching. The main functions includes resume revision and mock interview
