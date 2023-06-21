@@ -11,9 +11,24 @@ openai = "^0.27.7"
 langchain = "^0.0.189"
 pymupdf = "^1.22.3"
 pypdf2 = "^3.0.1"
-textract = "^1.6.5"
+pydantic = "^1.10.8"
+flask = "^2.3.2"
+flasgger = "^0.9.7.1"
 
 
+[tool.poetry.group.dev.dependencies]
+commitizen = "^3.2.2"
+ipykernel = "^6.23.1"
+python-dotenv = "^1.0.0"
+
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_type = "pep440"
+version_provider = "poetry"
+update_changelog_on_bump = true
+major_version_zero = true
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
