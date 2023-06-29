@@ -2,6 +2,7 @@ data/
 .vscode/
 .venv/
 */.env
+local/
 
 *.egg
 __pycache__/
