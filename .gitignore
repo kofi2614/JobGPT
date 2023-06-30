@@ -1,3 +1,7 @@
+#local files
+data/
+local/
+
 # OS files
 .DS_Store
 
