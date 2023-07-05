@@ -4,12 +4,12 @@
 
 <h2>Resume Analyzer</h2>
 
-<form action="/analyze" method="post">
+<form action="/segment" method="post" enctype="multipart/form-data">
   <label for="resume">Resume:</label><br>
-  <textarea id="resume" name="resume" rows="4" cols="50"></textarea>
+  <input type="file" id="resume" name="resume" accept=".pdf">
   <br>
-  <label for="job_descriptoin">Job Description:</label><br>
-  <textarea id="job_descriptoin" name="job_descriptoin" rows="4" cols="50"></textarea>
+  <label for="job_description">Job Description:</label><br>
+  <textarea id="job_description" name="job_description" rows="4" cols="50"></textarea>
   <br>
   <input type="submit" value="Submit">
 </form>

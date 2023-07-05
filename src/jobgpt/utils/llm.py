@@ -2,9 +2,9 @@ from langchain.callbacks import get_openai_callback
 from langchain.chat_models import ChatOpenAI
 import os
 
-def load_model():
+def load_model(model_name="gpt-4"):
     return ChatOpenAI(
-            model_name="gpt-4",
+            model_name=model_name,
             openai_api_key=os.environ["OPENAI_API_KEY"],
             temperature=0,
             verbose=True,

@@ -41,7 +41,7 @@ resume: {resume_text}
 """.strip()
 class ResumeSegmenter:
     def __init__(self):
-        self.llm = load_model()
+        self.llm = load_model(model_name="gpt-3.5-turbo")
         system_prompt = SystemMessagePromptTemplate.from_template(system_template)
         user_prompt = HumanMessagePromptTemplate.from_template(user_teamplate)
         resume_segmenter_prompt = ChatPromptTemplate(input_variables=["json_format", "resume_text"], messages=[system_prompt, user_prompt])

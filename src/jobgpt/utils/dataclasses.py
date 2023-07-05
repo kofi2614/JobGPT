@@ -28,3 +28,12 @@ class SegmentedResume(BaseModel):
     personal_projects: Optional[List[PersonalProject]] = Field(description="The project section of the resume. It can be personal project, research project, case study or attended competition")
     summary: Optional[Summary] = Field(description="The summary section of the resume")
     skills: Optional[Skills] = Field(description="The skills section of the resume")
+
+def dataclass_to_str(dataclass):
+    str_list = []
+    for value in dataclass.dict().values():
+        if isinstance(value, list):
+            str_list.extend(value)
+        else:
+            str_list.append(value)
+    return str_list
