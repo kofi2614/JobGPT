@@ -2,7 +2,6 @@ from flask import Flask, request, render_template
 from jobgpt.resume_analyzer.resume_analyzer import ResumeAnalyzer
 from jobgpt.resume_analyzer.resume_reader import ResumeReader
 from jobgpt.resume_analyzer.resume_segmenter import ResumeSegmenter
-from jobgpt.utils.dataclasses import dataclass_to_str
 import io
 app = Flask(__name__)
 
@@ -20,26 +19,17 @@ def process_resumes():
         return 'No Resume Found'
     file = request.files['resume']
     if file.filename == '':        
-        return 'No Resoume Found'
+        return 'No Resume Found'
     if not file:
-       return 'No Resoume Found'
+       return 'No Resume Found'
     
     byte_stream = io.BytesIO(file.stream.read())
     resume = ResumeReader().read(byte_stream)
-    segmented_resume = ResumeSegmenter().segment(resume)
-    work_experience_str = list(map(dataclass_to_str, segmented_resume.work_experiences))
-    # work_experience_str = TEXT
-    # print(segmented_resume)
-    # job_description = request.form.get('job_description')
-    # analyzer = ResumeAnalyzer()
-    # output = analyzer.analyze(resume, job_description)
-    # You can now do whatever you need with the strings
-    # For now, we'll just return them in a plain text response
-    # evaluation = output['evaluation']
-    # suggestion = output['suggestions']
-    # revised_resume = output['revised_resume']
-    return render_template('segmented_resume.html', work_experience = work_experience_str)
-
+    segmented_resume = ResumeSegmenter().segment(resume)       
+    import json
+    with open("local/segmented_resume.json", "w") as f:
+        json.dump(segmented_resume.to_list(), f, indent=4)
+    return render_template('segmented_resume.html', segmented_resume=segmented_resume.to_list())                          
 
 if __name__ == "__main__":
     app.run(debug=True)
