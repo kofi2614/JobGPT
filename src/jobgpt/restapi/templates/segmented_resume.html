@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Your Resume</h2>
+<script>
+  var segmented_resume = JSON.parse('{{ segmented_resume | tojson | safe }}');  
+  segmented_resume.forEach(section => {      
+    if (section != null) {      
+      title = section['title']
+      content = section['content']      
+      let newH3 = document.createElement('h3');
+      newH3.innerHTML = title;
+      document.body.appendChild(newH3);
+      let newDiv = document.createElement('div');      
+      newDiv.setAttribute('id', title);
+      document.body.appendChild(newDiv);
+      let container = document.getElementById(title);            
+      let textarea = document.createElement('textarea');      
+      textarea.setAttribute('id', title);
+      textarea.setAttribute('name', title);
+      textarea.setAttribute('rows', '30');
+      textarea.setAttribute('cols', '200');
+      textarea.value = content;
+      container.appendChild(textarea);
+      let br = document.createElement('br');
+      container.appendChild(br);              
+    }    
+  });
+</script> 
+
+
+<a href="/">Back</a>
+
+</body>
+</html>

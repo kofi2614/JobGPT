@@ -1,24 +1,20 @@
 """Read resume in pdf format and return a string of text"""
 
 import fitz
+import io
+from typing import Union
 
 class ResumeReader:
     def __init__(self):
         pass
-    def read(self, pdf_path):
-        text = ""
-        with fitz.open(pdf_path) as doc:
-            for page in doc:
-                text += page.get_text()
-        return text
-
-if __name__ == '__main__':
-    
-    # Provide the path to your resume PDF file
-    resume_path = 'data/resumes/resume_1.pdf'
-
-    # Extract text from the resume PDF
-    resume_text = ResumeReader().read(resume_path)
-
-    # Print the extracted text
-    print(resume_text)
+    def read(self, pdf: Union[str, io.BytesIO]):        
+            
+        texts = []
+        if isinstance(pdf, str):
+            doc = fitz.open(pdf)
+        elif isinstance(pdf, io.BytesIO):
+            doc = fitz.open(stream=pdf, filetype="pdf")        
+        for page in doc:
+            texts.append(page.get_text())
+        return texts 
+  

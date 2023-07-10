@@ -1,6 +1,6 @@
 import json
 import os
-from langchain import PromptTemplate
+
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from jobgpt.resume_analyzer.resume_reader import ResumeReader
@@ -9,7 +9,7 @@ from langchain.prompts import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate
 )
-from jobgpt.utils.llm import count_tokens
+from jobgpt.utils.llm import count_tokens, load_model
 from typing import List
 
 system_template = """
@@ -34,18 +34,14 @@ Job Description: {job_description}
 
 class ResumeAnalyzer:
     def __init__(self):
-        self.llm = ChatOpenAI(
-            model_name="gpt-4",
-            openai_api_key=os.environ["OPENAI_API_KEY"],
-            temperature=0,
-            verbose=True,
-        )
+        self.llm = load_model()
         system_prompt = SystemMessagePromptTemplate.from_template(system_template.strip())
         user_prompt = HumanMessagePromptTemplate.from_template(user_teamplate.strip())
-        self.resume_analyzer_prompt = ChatPromptTemplate(input_variables=["section", "section_text", "job_description"], messages=[system_prompt, user_prompt])
+        resume_analyzer_prompt = ChatPromptTemplate(input_variables=["section", "section_text", "job_description"], messages=[system_prompt, user_prompt])
+        self.chain_analyze = LLMChain(llm=self.llm, prompt=resume_analyzer_prompt)
     def analyze(self, section_text: str, job_description: str, section: str = 'work experience') -> dict:
-        chain_analyze = LLMChain(llm=self.llm, prompt=self.resume_analyzer_prompt)
-        output = count_tokens(chain_analyze, 
+        
+        output = count_tokens(self.chain_analyze, 
                               {"section": section, 
                                "section_text": section_text, 
                                "job_description": job_description
