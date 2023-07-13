@@ -5,17 +5,25 @@
 <h2>Your Resume</h2>
 <script>
   var segmented_resume = JSON.parse('{{ segmented_resume | tojson | safe }}');  
+  console.log(segmented_resume);
   segmented_resume.forEach(section => {      
     if (section != null) {      
       title = section['title']
-      content = section['content']      
+      content = section['content']
+      analysis = section['analysis']      
+
       let newH3 = document.createElement('h3');
       newH3.innerHTML = title;
       document.body.appendChild(newH3);
-      let newDiv = document.createElement('div');      
+      
+      let newDiv = document.createElement('div');
+      newDiv.style.display = 'flex'; // New line
+      newDiv.style.justifyContent = 'space-between'; // New line
       newDiv.setAttribute('id', title);
       document.body.appendChild(newDiv);
+      
       let container = document.getElementById(title);            
+      
       let textarea = document.createElement('textarea');      
       textarea.setAttribute('id', title);
       textarea.setAttribute('name', title);
@@ -23,12 +31,16 @@
       textarea.setAttribute('cols', '200');
       textarea.value = content;
       container.appendChild(textarea);
+      
+      let analysisPara = document.createElement('p'); // New line
+      analysisPara.innerText = analysis; // New line
+      container.appendChild(analysisPara); // New line
+              
       let br = document.createElement('br');
       container.appendChild(br);              
     }    
   });
 </script> 
-
 
 <a href="/">Back</a>
 

@@ -77,16 +77,16 @@ class PersonalProjectSection(Section):
         return pp_list
       
 class SummarySection(Section):
-    text: List[str] = Field(description="The summary or highlight of the resume which usually appears at the top or buttom of the resume")
+    bullet_points: List[str] = Field(description="The summary or highlight of the resume which usually appears at the top or buttom of the resume")
 
     def to_list(self):
-        return ["* " + t for t in self.text]    
+        return ["* " + t for t in self.bullet_points]    
 
 class SkillsSection(Section):
-    text: List[str] = Field(description="The list of skills that the candidate has")
+    bullet_points: List[str] = Field(description="The list of skills that the candidate has")
 
     def to_list(self):
-        return ["* " + t for t in self.text]
+        return ["* " + t for t in self.bullet_points]
 
 
 
@@ -107,3 +107,9 @@ class SegmentedResume(BaseModel):
             {"title": "Personal Projects", "content": self.personal_projects.to_str_html()} if self.personal_projects else None,            
             {"title": "Skills", "content": self.skills.to_str_html()} if self.skills else None                          
         ]
+    
+
+class AnalyzedSection(BaseModel):
+    evaluation: str = Field(description="The detailed evaluation of the section")
+    suggestion: List[str] = Field(description="The list of suggestions that you think the user should improve in this section")
+    revised_section: Section = Field(description="The revised section of the resume that you think the user should use")

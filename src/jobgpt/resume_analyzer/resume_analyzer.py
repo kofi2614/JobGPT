@@ -4,47 +4,123 @@ import os
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from jobgpt.resume_analyzer.resume_reader import ResumeReader
+from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate
 )
 from jobgpt.utils.llm import count_tokens, load_model
-from typing import List
+from typing import Dict
+from jobgpt.utils.dataclasses import SummarySection, SkillsSection, WorkExperienceSection, EducationSection, PersonalProjectSection
+
 
 system_template = """
 You are an experienced career consultalt who helps clients to improve their resumes.
 When you are asked to provide evaluation or suggestion, make sure your are critical and specific.
 Focus on the use of professional language and the relevancy to the job description.
 REMEMBER DO NOT make things up or create fake experiences. 
+""".strip()
 
-You response should be in JSON format with following keys: "evaluation", "suggestions", "revised_resume".
-"""
-user_teamplate = """
-You are a experienced career consultalt helping clients with the {section} section of their resumes given a job description that the client is applying for.
+skills_teamplate = """
+You are a experienced career consultalt helping clients with the skills section of their resumes given a job description that the client is applying for.
 Let's think step by step and experience by experience.
-First, give an CRITICAL evaluation of the {section} focusing on use of professional language and the relevancy to the job description.
+First, give an CRITICAL evaluation of the skills section focusing on use of professional language and the relevancy to the job description.
 Second, provide suggestions on how the client can improve the section. Mention the exact wording used and how the client can reword it. 
 Try to find all the problems and give specific suggestions.
-Last, give a revision of the {section} section besed on your suggestions.
+Last, give a revision of the skills section besed on your suggestions.
 
 {section}: {section_text}
 Job Description: {job_description}
-"""
+""".strip()
+
+work_experience_teamplate = """
+You are a experienced career consultalt helping clients with the work experience section of their resumes given a job description that the client is applying for.
+Let's think step by step and experience by experience.
+First, give an CRITICAL evaluation of the work experience section focusing on use of professional language and the relevancy to the job description.
+Second, provide suggestions on how the client can improve the section. Mention the exact wording used and how the client can reword it. 
+Try to find all the problems and give specific suggestions.
+Last, give a revision of the work experience section besed on your suggestions.
+
+{section}: {section_text}
+Job Description: {job_description}
+""".strip()
+
+education_teamplate = """
+You are a experienced career consultalt helping clients with the education section of their resumes given a job description that the client is applying for.
+Let's think step by step and experience by experience.
+First, give an CRITICAL evaluation of the education section focusing on use of professional language and the relevancy to the job description.
+Second, provide suggestions on how the client can improve the section. Mention the exact wording used and how the client can reword it. 
+Try to find all the problems and give specific suggestions.
+Last, give a revision of the education section besed on your suggestions.
+
+{section}: {section_text}
+Job Description: {job_description}
+""".strip()
+
+summary_teamplate = """
+You are a experienced career consultalt helping clients with the summary section of their resumes given a job description that the client is applying for.
+Let's think step by step and experience by experience.
+First, give an CRITICAL evaluation of the summary section focusing on use of professional language and the relevancy to the job description.
+Second, provide suggestions on how the client can improve the section. Mention the exact wording used and how the client can reword it. 
+Try to find all the problems and give specific suggestions.
+Last, give a revision of the summary section besed on your suggestions.
+
+{section}: {section_text}
+Job Description: {job_description}
+""".strip()
+
+personal_project_teamplate = """
+You are a experienced career consultalt helping clients with the personal project section of their resumes given a job description that the client is applying for.
+Let's think step by step and experience by experience.
+First, give an CRITICAL evaluation of the personal project section focusing on use of professional language and the relevancy to the job description.
+Second, provide suggestions on how the client can improve the section. Mention the exact wording used and how the client can reword it. 
+Try to find all the problems and give specific suggestions.
+Last, give a revision of the personal project section besed on your suggestions.
+
+{section}: {section_text}
+Job Description: {job_description}
+""".strip()
+
+section_title_map = {
+    "Skills": "skills",
+    "Work Experience": "work_experience",
+    "Education": "education",
+    "Summary": "summary",
+    "Personal Projects": "personal_project"    
+}
+prompt_map = {
+    "skills": skills_teamplate,
+    "work_experience": work_experience_teamplate,
+    "education": education_teamplate,
+    "summary": summary_teamplate,
+    "personal_project": personal_project_teamplate
+}
+
+section_model_map = {
+    "skills": SkillsSection,
+    "work_experience": WorkExperienceSection,
+    "education": EducationSection,
+    "summary": SummarySection,
+    "personal_project": PersonalProjectSection    
+}
 
 class ResumeAnalyzer:
-    def __init__(self):
-        self.llm = load_model()
-        system_prompt = SystemMessagePromptTemplate.from_template(system_template.strip())
-        user_prompt = HumanMessagePromptTemplate.from_template(user_teamplate.strip())
-        resume_analyzer_prompt = ChatPromptTemplate(input_variables=["section", "section_text", "job_description"], messages=[system_prompt, user_prompt])
-        self.chain_analyze = LLMChain(llm=self.llm, prompt=resume_analyzer_prompt)
-    def analyze(self, section_text: str, job_description: str, section: str = 'work experience') -> dict:
-        
-        output = count_tokens(self.chain_analyze, 
-                              {"section": section, 
-                               "section_text": section_text, 
-                               "job_description": job_description
-                               })
-        output_dict = json.loads(output['result'])
-        return output_dict
+    def __init__(self, model_name: str = "gpt-3.5-turbo"):
+        self.llm = load_model(model_name)        
+        self.system_prompt = SystemMessagePromptTemplate.from_template(system_template.strip())        
+    def analyze(self, section: Dict[str, str], job_description: str) -> dict:
+        section_title = section_title_map[section['title']]
+        section_text = section['content']
+        self.parser = PydanticOutputParser(pydantic_object=section_model_map[section_title])
+        user_prompt = HumanMessagePromptTemplate.from_template(prompt_map[section_title])
+        resume_analyzer_prompt = ChatPromptTemplate(input_variables=["section", "section_text", "job_description"], messages=[self.system_prompt, user_prompt])
+        chain_analyze = LLMChain(llm=self.llm, prompt=resume_analyzer_prompt)
+        output = chain_analyze.run(
+            {                   
+                "section": section_title, 
+                "section_text": section_text, 
+                "job_description": job_description
+            })        
+        # section['analysis'] = output
+        return output
