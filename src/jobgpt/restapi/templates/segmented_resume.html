@@ -3,43 +3,84 @@
 <body>
 
 <h2>Your Resume</h2>
+<style>
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch; /* Make items the same height */
+}
+textarea, p {
+  height: 300px; /* Or whatever maximum height you want */
+  overflow-y: auto; /* Enable vertical scrolling */
+  width: 800px; /* Or whatever width you want */
+  margin-right: 20px;
+}
+button {
+  align-self: flex-start; /* Align button to the top */
+}
+</style>
 <script>
-  var segmented_resume = JSON.parse('{{ segmented_resume | tojson | safe }}');  
-  console.log(segmented_resume);
-  segmented_resume.forEach(section => {      
-    if (section != null) {      
-      title = section['title']
-      content = section['content']
-      analysis = section['analysis']      
+  var segmented_resume = JSON.parse('{{ segmented_resume | tojson | safe }}');    
+  var jd = "{{ jd }}"
+  function createSection(section) {
+    if (section == null) {
+      return;
+    }
+    let title = section['title']
+    let content = section['content']
+    let analysis = section['analysis']  
 
-      let newH3 = document.createElement('h3');
-      newH3.innerHTML = title;
-      document.body.appendChild(newH3);
-      
-      let newDiv = document.createElement('div');
-      newDiv.style.display = 'flex'; // New line
-      newDiv.style.justifyContent = 'space-between'; // New line
-      newDiv.setAttribute('id', title);
-      document.body.appendChild(newDiv);
-      
-      let container = document.getElementById(title);            
-      
-      let textarea = document.createElement('textarea');      
-      textarea.setAttribute('id', title);
-      textarea.setAttribute('name', title);
-      textarea.setAttribute('rows', '30');
-      textarea.setAttribute('cols', '200');
-      textarea.value = content;
-      container.appendChild(textarea);
-      
-      let analysisPara = document.createElement('p'); // New line
-      analysisPara.innerText = analysis; // New line
-      container.appendChild(analysisPara); // New line
-              
-      let br = document.createElement('br');
-      container.appendChild(br);              
-    }    
-  });
+    let newH3 = document.createElement('h3');
+    newH3.innerHTML = title;
+    document.body.appendChild(newH3);
+    
+    let newDiv = document.createElement('div');
+    newDiv.className = 'container';
+    newDiv.setAttribute('id', title);
+    document.body.appendChild(newDiv);
+    
+    let container = document.getElementById(title);            
+    
+    let textarea = document.createElement('textarea');      
+    textarea.setAttribute('id', title);
+    textarea.setAttribute('name', title);
+    textarea.setAttribute('rows', '30');
+    textarea.setAttribute('cols', '200');
+    textarea.value = content;
+    container.appendChild(textarea);
+    
+    let analysisPara = document.createElement('p'); 
+    analysisPara.innerText = analysis; 
+    container.appendChild(analysisPara); 
+    
+    let updateBtn = document.createElement('button');
+    updateBtn.innerText = 'Update';
+    updateBtn.addEventListener('click', function() {
+        let title = newH3.innerText;
+        let content = textarea.value;
+        let analysis = analysisPara.innerText;
+        fetch('/followup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ title, content, analysis, jd })
+        })
+        .then(response => response.json())
+        .then(data => {            
+            analysisPara.innerText = data.analysis;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+    container.appendChild(updateBtn);
+
+    let br = document.createElement('br');
+    container.appendChild(br);
+  }
+
+  segmented_resume.forEach(createSection);
 </script> 
 
 <a href="/">Back</a>
