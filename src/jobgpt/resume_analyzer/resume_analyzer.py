@@ -90,7 +90,7 @@ section_title_map = {
     "Personal Projects": "personal_project"    
 }
 prompt_map = {
-    "skills": skills_teamplate,
+    "skill": skills_teamplate,
     "work_experience": work_experience_teamplate,
     "education": education_teamplate,
     "summary": summary_teamplate,
@@ -98,7 +98,7 @@ prompt_map = {
 }
 
 section_model_map = {
-    "skills": SkillsSection,
+    "skill": SkillsSection,
     "work_experience": WorkExperienceSection,
     "education": EducationSection,
     "summary": SummarySection,
@@ -109,18 +109,14 @@ class ResumeAnalyzer:
     def __init__(self, model_name: str = "gpt-3.5-turbo"):
         self.llm = load_model(model_name)        
         self.system_prompt = SystemMessagePromptTemplate.from_template(system_template.strip())        
-    def analyze(self, section: Dict[str, str], job_description: str) -> dict:
-        section_title = section_title_map[section['title']]
-        section_text = section['content']
-        self.parser = PydanticOutputParser(pydantic_object=section_model_map[section_title])
+    async def analyze(self, section_title: str, section_text: str, job_description: str) -> dict:                
         user_prompt = HumanMessagePromptTemplate.from_template(prompt_map[section_title])
         resume_analyzer_prompt = ChatPromptTemplate(input_variables=["section", "section_text", "job_description"], messages=[self.system_prompt, user_prompt])
         chain_analyze = LLMChain(llm=self.llm, prompt=resume_analyzer_prompt)
-        output = chain_analyze.run(
+        output = await chain_analyze.arun(
             {                   
                 "section": section_title, 
                 "section_text": section_text, 
                 "job_description": job_description
-            })        
-        # section['analysis'] = output
+            })                
         return output

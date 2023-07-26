@@ -92,21 +92,29 @@ class SkillsSection(Section):
 
 
 
-class SegmentedResume(BaseModel):
-    work_experiences: WorkExperienceSection = Field(description="The work experience section of the resume")
-    educations: EducationSection = Field(description="The education section of the resume")
-    personal_projects: Optional[PersonalProjectSection] = Field(description="The project section of the resume. It can be personal project, research project, case study or attended competition")
-    summary: Optional[SummarySection] = Field(description="The summary section of the resume")
-    skills: Optional[SkillsSection] = Field(description="The skills section of the resume")
+# class SegmentedResume(BaseModel):
+#     work_experiences: WorkExperienceSection = Field(description="The work experience section of the resume")
+#     educations: EducationSection = Field(description="The education section of the resume")
+#     personal_projects: Optional[PersonalProjectSection] = Field(description="The project section of the resume. It can be personal project, research project, case study or attended competition")
+#     summary: Optional[SummarySection] = Field(description="The summary section of the resume")
+#     skills: Optional[SkillsSection] = Field(description="The skills section of the resume")
 
-    def to_list(self):                
-        return [
-            {"title": "Summary", "content": self.summary.to_str_html()} if self.summary else None,
-            {"title": "Work Experience", "content": self.work_experiences.to_str_html()} if self.work_experiences else None,
-            {"title": "Education", "content": self.educations.to_str_html()} if self.educations else None,
-            {"title": "Personal Projects", "content": self.personal_projects.to_str_html()} if self.personal_projects else None,            
-            {"title": "Skills", "content": self.skills.to_str_html()} if self.skills else None                          
-        ]
+#     def to_list(self):                
+#         return [
+#             {"title": "Summary", "content": self.summary.to_str_html()} if self.summary else None,
+#             {"title": "Work Experience", "content": self.work_experiences.to_str_html()} if self.work_experiences else None,
+#             {"title": "Education", "content": self.educations.to_str_html()} if self.educations else None,
+#             {"title": "Personal Projects", "content": self.personal_projects.to_str_html()} if self.personal_projects else None,            
+#             {"title": "Skills", "content": self.skills.to_str_html()} if self.skills else None                          
+#         ]
+
+class SegmentedResume(BaseModel):
+    work_experience: str = Field(description="The text content of the work experience section of the resume")
+    education: str = Field(description="The text content of the education section of the resume")
+    personal_project: Optional[str] = Field(description="The text content of the project section of the resume. It can be personal project, research project, case study or attended competition")
+    summary: Optional[str] = Field(description="The text content of the summary section of the resume")
+    skill: Optional[str] = Field(description="The text content of the skills section of the resume")
+
     
 
 class AnalyzedSection(BaseModel):
