@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, render_template
-from jobgpt.resume_analyzer.resume_analyzer import ResumeAnalyzer
-from jobgpt.resume_analyzer.resume_reader import ResumeReader
-from jobgpt.resume_analyzer.resume_segmenter import ResumeSegmenter
+from jobgpt.resume_processor.resume_analyzer import ResumeAnalyzer
+from jobgpt.resume_processor.resume_reader import ResumeReader
+from jobgpt.resume_processor.resume_segmenter import ResumeSegmenter
+from jobgpt.resume_processor.base import ResumeProcessor
 import io
 import asyncio
 import json
@@ -26,18 +27,24 @@ def process_resumes():
         return 'No Resume Found'
     jd = request.form['job_description']
     byte_stream = io.BytesIO(file.stream.read())
-    resume = ResumeReader().read(byte_stream)
-    analyzer = ResumeAnalyzer()
-    segmented_resume = ResumeSegmenter("gpt-4").segment(resume).to_list()    
-    # for resume_segment in segmented_resume:
-    #     if resume_segment:
-    #         resume_segment['analysis'] = analyzer.analyze(resume_segment, jd)                    
-    # print(segmented_resume)    
-    for segment in segmented_resume:
+    # resume = ResumeReader().read(byte_stream)
+    # analyzer = ResumeAnalyzer()
+    # segmented_resume = ResumeSegmenter("gpt-4").segment(resume).to_list()    
+    # # for resume_segment in segmented_resume:
+    # #     if resume_segment:
+    # #         resume_segment['analysis'] = analyzer.analyze(resume_segment, jd)                    
+    # # print(segmented_resume)    
+    
+    # processed_resume = ResumeProcessor().process(byte_stream, jd)
+    with open('local/processed_resume.json', 'r') as f:
+        processed_resume = json.load(f)
+    for segment in processed_resume:
         if segment:
             segment['analysis'] = segment['analysis'].replace('\n', '\\n')
             segment['analysis'] = segment['analysis'].replace("""\"""", '')
-    return render_template('segmented_resume.html', segmented_resume=segmented_resume, jd=jd)                          
+            segment['content'] = segment['content'].replace('\n', '\\n')
+            segment['content'] = segment['content'].replace("""\"""", '')
+    return render_template('segmented_resume.html', segmented_resume=processed_resume, jd=jd)                          
 
 @app.route('/followup', methods=['POST'])
 def followup():

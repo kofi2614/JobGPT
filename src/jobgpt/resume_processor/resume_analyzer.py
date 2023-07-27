@@ -3,7 +3,7 @@ import os
 
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
-from jobgpt.resume_analyzer.resume_reader import ResumeReader
+from jobgpt.resume_processor.resume_reader import ResumeReader
 from langchain.output_parsers import PydanticOutputParser
 from langchain.prompts import (
     ChatPromptTemplate,
@@ -113,10 +113,11 @@ class ResumeAnalyzer:
         user_prompt = HumanMessagePromptTemplate.from_template(prompt_map[section_title])
         resume_analyzer_prompt = ChatPromptTemplate(input_variables=["section", "section_text", "job_description"], messages=[self.system_prompt, user_prompt])
         chain_analyze = LLMChain(llm=self.llm, prompt=resume_analyzer_prompt)
-        output = await chain_analyze.arun(
+        analysis = await chain_analyze.arun(
             {                   
                 "section": section_title, 
                 "section_text": section_text, 
                 "job_description": job_description
-            })                
+            })  
+        output = {"title": section_title, "analysis": analysis}              
         return output
