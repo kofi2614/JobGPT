@@ -21,7 +21,9 @@ button {
 </style>
 <script>
   var segmented_resume = JSON.parse('{{ segmented_resume | tojson | safe }}');    
+  console.log(segmented_resume)
   var jd = "{{ jd }}"
+  console.log(jd)
   function createSection(section) {
     if (section == null) {
       return;

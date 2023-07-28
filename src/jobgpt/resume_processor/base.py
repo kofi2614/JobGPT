@@ -11,15 +11,14 @@ class ResumeProcessor:
         self.reader = ResumeReader()
         self.segmenter = ResumeSegmenter(segmenter_model)
         self.analyzer = ResumeAnalyzer(analyzer_model)
-    def process(self, resume_path: Union[str, io.BytesIO], jd: str):
+    async def process(self, resume_path: Union[str, io.BytesIO], jd: str):
         resume = self.reader.read(resume_path)        
         segmented_resume = self.segmenter.segment(resume)
         analyzer_inputs = [
             (k, v, jd) for k, v in segmented_resume.items() if v
         ]
-        tasks = [self.analyzer.analyze(*analyzer_input) for analyzer_input in analyzer_inputs]
-        loop = asyncio.get_event_loop()
-        analyzed_resume = loop.run_until_complete(asyncio.gather(*tasks))
+        tasks = [self.analyzer.analyze(*analyzer_input) for analyzer_input in analyzer_inputs]        
+        analyzed_resume = await asyncio.gather(*tasks)
         for section in analyzed_resume:
             section['content'] = segmented_resume[section['title']]
         return analyzed_resume
