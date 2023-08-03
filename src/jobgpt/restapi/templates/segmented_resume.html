@@ -19,8 +19,9 @@ button {
   align-self: flex-start; /* Align button to the top */
 }
 </style>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script>
-  var segmented_resume = JSON.parse('{{ segmented_resume | tojson | safe }}');    
+  var segmented_resume = JSON.parse('{{ segmented_resume | safe }}');    
   console.log(segmented_resume)
   var jd = "{{ jd }}"
   console.log(jd)
