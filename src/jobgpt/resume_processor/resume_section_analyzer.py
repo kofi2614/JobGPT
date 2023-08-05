@@ -20,6 +20,12 @@ You are an experienced career consultalt who helps clients to improve their resu
 When you are asked to provide evaluation or suggestion, make sure your are critical and specific.
 Focus on the use of professional language and the relevancy to the job description.
 REMEMBER DO NOT make things up or create fake experiences. 
+
+Your output should always be in JSON format with following fields:
+- Evaluation: a list of strings, each string is an evaluation of a work experience
+- Suggestions: a list of strings, each string is a suggestion of a work experience
+- Revision: a list of strings, each string is a revision of a work experience
+
 """.strip()
 
 skills_teamplate = """
@@ -105,7 +111,7 @@ section_model_map = {
     "personal_project": PersonalProjectSection    
 }
 
-class ResumeAnalyzer:
+class ResumeSectionAnalyzer:
     def __init__(self, model_name: str = "gpt-3.5-turbo"):
         self.llm = load_model(model_name)        
         self.system_prompt = SystemMessagePromptTemplate.from_template(system_template.strip())        

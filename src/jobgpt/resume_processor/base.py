@@ -1,4 +1,4 @@
-from jobgpt.resume_processor.resume_analyzer import ResumeAnalyzer
+from jobgpt.resume_processor.resume_section_analyzer import ResumeSectionAnalyzer
 from jobgpt.resume_processor.resume_segmenter import ResumeSegmenter
 from jobgpt.resume_processor.resume_reader import ResumeReader
 from typing import Union
@@ -10,7 +10,7 @@ class ResumeProcessor:
     def __init__(self, segmenter_model = "gpt-3.5-turbo", analyzer_model = "gpt-3.5-turbo"):
         self.reader = ResumeReader()
         self.segmenter = ResumeSegmenter(segmenter_model)
-        self.analyzer = ResumeAnalyzer(analyzer_model)
+        self.analyzer = ResumeSectionAnalyzer(analyzer_model)
     async def process(self, resume_path: Union[str, io.BytesIO], jd: str):
         resume = self.reader.read(resume_path)        
         segmented_resume = self.segmenter.segment(resume)

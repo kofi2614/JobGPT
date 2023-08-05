@@ -3,6 +3,7 @@
 import fitz
 import io
 from typing import Union
+from jobgpt.utils.text_processor import process_text
 
 class ResumeReader:
     def __init__(self):
@@ -16,5 +17,7 @@ class ResumeReader:
             doc = fitz.open(stream=pdf, filetype="pdf")        
         for page in doc:
             texts.append(page.get_text())
-        return texts 
+        text = "\n".join(texts)
+        text = process_text(text)
+        return text 
   
