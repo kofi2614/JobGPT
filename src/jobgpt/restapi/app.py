@@ -7,7 +7,10 @@ from jobgpt.utils.text_processor import process_text
 import io
 import asyncio
 import json
+import logging
+import sys
 
+logging.basicConfig(level=logging.INFO, stream=sys.stdout)
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
@@ -25,15 +28,13 @@ def process_resumes():
         return 'No Resume Found'
     jd = json.dumps(process_text(request.form['job_description']))
     byte_stream = io.BytesIO(file.stream.read())        
-    processed_resume = asyncio.run(ResumeProcessor().process(byte_stream, jd))    
+    processed_resume = asyncio.run(ResumeProcessor(analyzer_model="gpt-4", analyzer_temperature=0.3).process(byte_stream, jd))    
     with open('local/processed_resume.json', 'w') as f:
         json.dump(processed_resume, f, indent=4)
     for segment in processed_resume:
         if segment:
             segment['analysis'] = process_text(segment['analysis'])
-            segment['content'] = process_text(segment['content'])           
-    processed_resume_str = json.dumps(processed_resume)   
-    # print(processed_resume_str)
+            segment['content'] = process_text(segment['content'])               
     return render_template('segmented_resume.html', segmented_resume=processed_resume, jd=jd)                          
 
 @app.route('/followup', methods=['POST'])

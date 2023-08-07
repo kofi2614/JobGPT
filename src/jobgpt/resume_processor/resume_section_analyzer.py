@@ -19,12 +19,22 @@ system_template = """
 You are an experienced career consultalt who helps clients to improve their resumes.
 When you are asked to provide evaluation or suggestion, make sure your are critical and specific.
 Focus on the use of professional language and the relevancy to the job description.
+Your consideration should include but not limited to the following aspects:
+(1) Whether the wording in the resume is professional and appropriate.
+(2) Whether measurable results are used to describe the experience.
+(3) Whether the experience is relevant to the job description.
+(4) Whether the key words in the job description are used in the resume. 
+    Note that client may not have all the skills or experiences required in the job description.
+(5) Make sure that no common cliches and buzzwords are used in the resume.
+(6) Any other issues or rooms for improvement you can find in the resume.
 REMEMBER DO NOT make things up or create fake experiences. 
 
 Your output should always be in JSON format with following fields:
 - Evaluation: a list of strings, each string is an evaluation of a work experience
 - Suggestions: a list of strings, each string is a suggestion of a work experience
 - Revision: a list of strings, each string is a revision of a work experience
+
+Make sure to add proper line breaker "\n" in your response so that format is pretty.
 
 """.strip()
 
@@ -46,7 +56,7 @@ Let's think step by step and experience by experience.
 First, give an CRITICAL evaluation of the work experience section focusing on use of professional language and the relevancy to the job description.
 Second, provide suggestions on how the client can improve the section. Mention the exact wording used and how the client can reword it. 
 Try to find all the problems and give specific suggestions.
-Last, give a revision of the work experience section besed on your suggestions.
+Last, give a revision of the work experience section besed on your suggestions
 
 {section}: {section_text}
 Job Description: {job_description}
@@ -112,8 +122,8 @@ section_model_map = {
 }
 
 class ResumeSectionAnalyzer:
-    def __init__(self, model_name: str = "gpt-3.5-turbo"):
-        self.llm = load_model(model_name)        
+    def __init__(self, model_name: str = "gpt-3.5-turbo", temperature: float = 0.0):
+        self.llm = load_model(model_name, temperature=temperature)        
         self.system_prompt = SystemMessagePromptTemplate.from_template(system_template.strip())        
     async def analyze(self, section_title: str, section_text: str, job_description: str) -> dict:                
         user_prompt = HumanMessagePromptTemplate.from_template(prompt_map[section_title])

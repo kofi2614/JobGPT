@@ -7,10 +7,10 @@ import json
 import io
 
 class ResumeProcessor:
-    def __init__(self, segmenter_model = "gpt-3.5-turbo", analyzer_model = "gpt-3.5-turbo"):
+    def __init__(self, segmenter_model = "gpt-3.5-turbo", segmenter_temperature: float = 0.0, analyzer_model = "gpt-3.5-turbo", analyzer_temperature: float = 0.0):
         self.reader = ResumeReader()
-        self.segmenter = ResumeSegmenter(segmenter_model)
-        self.analyzer = ResumeSectionAnalyzer(analyzer_model)
+        self.segmenter = ResumeSegmenter(segmenter_model, segmenter_temperature)
+        self.analyzer = ResumeSectionAnalyzer(analyzer_model, analyzer_temperature)
     async def process(self, resume_path: Union[str, io.BytesIO], jd: str):
         resume = self.reader.read(resume_path)        
         segmented_resume = self.segmenter.segment(resume)

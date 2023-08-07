@@ -16,8 +16,8 @@ def process_text(text):
     text = re.sub(r"([\uf230])", "", text)
     text = re.sub(r"([◆●⌑◼☐★⋅])", "", text)    
     text = re.sub(f'[^{re.escape(string.printable)}]', '', text)
-    text = re.sub(r' {4,}', '\n', text)
-    text = re.sub(r'\n{2,}', '\n', text)
+    text = re.sub(r' {2,}', '\n', text)
+    text = re.sub(r'\n{1,}', '\n', text)
     text = text.replace("\n", "\\n")
     # text = html.escape(text).encode('unicode_escape').decode()
     return text

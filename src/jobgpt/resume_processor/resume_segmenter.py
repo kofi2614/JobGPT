@@ -50,8 +50,8 @@ Format the section content text by adding line breaks so it can be printed nicel
 resume: {resume_text}
 """.strip()
 class ResumeSegmenter:
-    def __init__(self, model_name: str = "gpt-3.5-turbo"):
-        self.llm = load_model(model_name=model_name)
+    def __init__(self, model_name: str = "gpt-3.5-turbo", temperature: float = 0.0):
+        self.llm = load_model(model_name=model_name, temperature=temperature)
         system_prompt = SystemMessagePromptTemplate.from_template(system_template)
         user_prompt = HumanMessagePromptTemplate.from_template(user_teamplate)
         resume_segmenter_prompt = ChatPromptTemplate(input_variables=["json_format", "resume_text"], messages=[system_prompt, user_prompt])
