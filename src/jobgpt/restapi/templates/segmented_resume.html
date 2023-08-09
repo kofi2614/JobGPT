@@ -61,7 +61,7 @@ button {
     updateBtn.addEventListener('click', function() {
         let title = newH3.innerText;
         let content = textarea.value;
-        let analysis = analysisPara.innerText;
+        let analysis = analysisPara.innerText;        
         fetch('/followup', {
             method: 'POST',
             headers: {
