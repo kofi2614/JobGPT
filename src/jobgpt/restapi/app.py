@@ -28,7 +28,7 @@ def process_resumes():
         return 'No Resume Found'
     jd = json.dumps(process_text(request.form['job_description']))
     byte_stream = io.BytesIO(file.stream.read())        
-    processed_resume = asyncio.run(ResumeProcessor(analyzer_model="gpt-3.5", analyzer_temperature=0.3).process(byte_stream, jd))    
+    processed_resume = asyncio.run(ResumeProcessor(analyzer_model="gpt-3.5-turbo", analyzer_temperature=0.3).process(byte_stream, jd))    
     with open('local/processed_resume.json', 'w') as f:
         json.dump(processed_resume, f, indent=4)
     for segment in processed_resume:
@@ -44,10 +44,8 @@ def followup():
     title = data.get('title')    
     content = data.get('content')
     original_analysis = data.get('analysis')
-    jd = data.get('jd')
-    print(content)
-    print(title)
-    analyzer = ResumeSectionAnalyzer()
+    jd = data.get('jd')   
+    analyzer = ResumeSectionAnalyzer(model_name="gpt-3.5-turbo", temperature=0.3)
     analysis_input = {'title': title, 'content': content}
     new_analysis = asyncio.run(analyzer.analyze(title, analysis_input, jd))    
     del new_analysis['title']
