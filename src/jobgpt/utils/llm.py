@@ -8,8 +8,9 @@ from typing import Any
 import logging
 
 class OpenAITokenandler(OpenAICallbackHandler):
-    def __init__(self):
+    def __init__(self, model_name:str):
         super().__init__()
+        self.model_name = model_name        
 
     def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:        
         token_usage = response.llm_output["token_usage"]
@@ -17,6 +18,7 @@ class OpenAITokenandler(OpenAICallbackHandler):
         prompt_tokens = token_usage["prompt_tokens"]
         completion_tokens = token_usage["completion_tokens"]                        
         log_metric = {
+            "model_name": self.model_name,            
             "total_tokens": total_tokens,
             "prompt_tokens": prompt_tokens,
             "completion_tokens": completion_tokens,            
@@ -29,7 +31,7 @@ def load_model(model_name="gpt-4", temperature=0.0):
             openai_api_key=os.environ["OPENAI_API_KEY"],
             temperature=temperature,
             verbose=True,
-            callbacks=BaseCallbackManager([OpenAITokenandler()]),            
+            callbacks=BaseCallbackManager([OpenAITokenandler(model_name=model_name)]),            
         )
 
 def count_tokens(chain, query):
