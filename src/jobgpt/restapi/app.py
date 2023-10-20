@@ -31,11 +31,12 @@ def process_resumes():
     processed_resume = asyncio.run(ResumeProcessor(analyzer_model="gpt-3.5-turbo", analyzer_temperature=0.3).process(byte_stream, jd))    
     with open('local/processed_resume.json', 'w') as f:
         json.dump(processed_resume, f, indent=4)
-    for segment in processed_resume:
-        if segment:
-            segment['analysis'] = process_text(segment['analysis'])
-            segment['content'] = process_text(segment['content'])               
-    return render_template('segmented_resume.html', segmented_resume=processed_resume, jd=jd)                          
+    # for segment in processed_resume:
+    #     if segment:
+    #         segment['analysis'] = process_text(segment['analysis'])
+    #         segment['content'] = process_text(segment['content'])               
+    # return render_template('segmented_resume.html', segmented_resume=jsonify(processed_resume), jd=jd)                          
+    return jsonify(processed_resume)
 
 @app.route('/followup', methods=['POST'])
 def followup():
